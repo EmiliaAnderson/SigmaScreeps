@@ -1,5 +1,5 @@
 var roleWorker={
-    run: function(spawn, source){
+    run: function(creep, spawn, source){
         if(creep.carry.energy < creep.carryCapacity){
             if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(source);
