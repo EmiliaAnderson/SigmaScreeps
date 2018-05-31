@@ -28,7 +28,10 @@ var roleUpgrader={
 
         if (spawn.room.energyAvailable >= 200) {
             console.log('Trying to spawn upgrader!')
-            if(spawn.spawnCreep([WORK,CARRY,MOVE], 'claire' + upgraderCounter, {memory:{role: 'upgrader'}}) == OK){
+
+            var spawnResult = spawn.spawnCreep([WORK,CARRY,MOVE], 'claire' + upgraderCounter, {memory:{role: 'upgrader'}});
+
+            if(spawnResult == OK || spawnResult == ERR_NAME_EXISTS){
                 upgraderCounter++;
             };
         }
