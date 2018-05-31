@@ -104,8 +104,26 @@ module.exports.loop = function () {
 
     //roleAttacker.createMinion(spawn);
 
+    //Looks like we capture all sources, either dead or active.  Changing this *should*
+    //cause the creeps to go to the next available one, but it's not the kind of spreading
+    //of resources we want, right? 
     var sources = spawn.room.find(FIND_SOURCES);
+    //I think that we are always sending everything to the first source with how we set mainSource
     var mainSource = sources[0];
+
+    //Aaand this is my attempt to make a difference here, but I know it's either incomplete,
+    //or invalid. See below
+
+    //var sources = spawn.room.find(FIND_SOURCES_ACTIVE);
+    //var mainSource;
+    //if(sources.length > 1) {
+    //for (var source in sources) {
+    //    mainSource = sources[source];
+    //}
+    //else {
+    //    mainSource = sources[0];
+    //}
+    //}
 
     for(var name in Game.creeps) {
         var creep = Game.creeps[name];
