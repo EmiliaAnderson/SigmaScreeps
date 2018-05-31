@@ -34,6 +34,41 @@ var checkAndBuildRoad = function (creep) {
   }
 }
 
+var checkToBuildExtension = function(curPos) {
+    var look = spawn.room.lookAt(curPos);
+    var dontBuildHere = false;
+    look.forEach(function(lookObject) {
+        if (dontBuildHere)
+        { 
+            // do nothing     
+        }
+        else if(lookObject.type == LOOK_STRUCTURES) {
+            if (lookObject.structure.structureType == 'extension') {
+                dontBuildHere = true;
+            }
+        }
+        else if(lookObject.type == LOOK_CONSTRUCTION_SITES) {
+            if (lookObject.constructionSite.structureType == 'extension') {
+                dontBuildHere = true;
+            }
+            else if (lookObject.constructionSite.structureType == 'road') {
+                lookObject.constructionSite.remove();
+            }
+        }
+    });
+
+    if (!dontBuildHere)
+    {
+        var result = curPos.createConstructionSite(STRUCTURE_EXTENSION);
+        if (result == ERR_RCL_NOT_ENOUGH)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 module.exports.loop = function () {
     var spawn = Game.spawns['Spawn1'];
     console.log("Running loop");
@@ -102,34 +137,37 @@ module.exports.loop = function () {
         if(spawn.room.controller.level > 1)
         {
             var spawnPos = spawn.pos;
-
-            var curPos = spawn.room.getPositionAt(spawnPos.x-1, spawnPos.y)
-            var look = spawn.room.lookAt(curPos);
-            var dontBuildHere = false;
-            look.forEach(function(lookObject) {
-                if (dontBuildHere)
-                { 
-                    // do nothing     
-                }
-                else if(lookObject.type == LOOK_STRUCTURES) {
-                    if (lookObject.structure.structureType == 'extension') {
-                        dontBuildHere = true;
-                    }
-                }
-                else if(lookObject.type == LOOK_CONSTRUCTION_SITES) {
-                    if (lookObject.constructionSite.structureType == 'extension') {
-                        dontBuildHere = true;
-                    }
-                    else if (lookObject.constructionSite.structureType == 'road') {
-                        lookObject.constructionSite.remove();
-                    }
-                }
-            });
-
-            if (!dontBuildHere)
+            
+            var stillPlacing = true;
+            var offset = 1;
+            while (stillPlacing)
             {
-                curPos.createConstructionSite(STRUCTURE_EXTENSION);
+                // try x levels
+                for (var yOffset = spawnPos.y - offset; yOffset < spawnPos.y; yOffset += 2 * offset) {
+                    for (var xOffset = spawnPos.x - offset + 1; xOffset < spawnPos.x + offset - 1; xOffset += 2) {
+                        if (!stillPlacing){
+                            break;
+                        }
+                        var curPos = spawn.room.getPositionAt(spawnPos.x + xOffset, spawnPos.y + yOffset);
+                        stillPlacing = checkToBuildExtension(curPos);
+                    }
+                }
+
+                // try y levels
+                for (var xOffset = spawnPos.x - offset; xOffset < spawnPos.x; xOffset += 2 * offset) {
+                    for (var yOffset = spawnPos.y - offset + 1; yOffset < spawnPos.y + offset - 1; yOffset += 2) {
+                        if (!stillPlacing){
+                            break;
+                        }
+                        var curPos = spawn.room.getPositionAt(spawnPos.x + xOffset, spawnPos.y + yOffset);
+                        stillPlacing = checkToBuildExtension(curPos);
+                    }
+                }
+                offset++;
             }
+            
+            var curPos = spawn.room.getPositionAt(spawnPos.x-1, spawnPos.y);
+            
 
         }
     }
