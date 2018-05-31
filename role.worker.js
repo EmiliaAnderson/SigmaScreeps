@@ -1,3 +1,5 @@
+var workerCounter = 1;
+
 var roleWorker={
     run: function(creep, spawn, source){
         if(creep.carry.energy < creep.carryCapacity){
@@ -9,6 +11,17 @@ var roleWorker={
             if( creep.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE ) {
                 creep.moveTo(spawn);
             }
+        }
+    },
+
+    createMinion: function(spawn){
+
+        if (spawn.room.energyAvailable >= 200) {
+            console.log('Trying to spawn worker!')
+            spawn.spawnCreep([WORK,CARRY,MOVE], 'bob' + workerCounter++, {memory:{role: 'worker'}});
+        }
+        else {
+            console.log("Not enough energy!");
         }
     }
 };
