@@ -28,7 +28,7 @@ var roleBuilder={
                         && (structure.store[RESOURCE_ENERGY] > 0); 
                 }
             });
-            var source = creep.pos.findClosestByPath(containers);
+            //var source = creep.pos.findClosestByPath(containers);
             if(creep.withdraw(source, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) { 
                 creep.moveTo(source);
             }
