@@ -1,6 +1,22 @@
 var roleWorker = require('role.worker');
 var roleUpgrader = require('role.upgrader');
 
+var checkAndBuildRoad = function (creep) {
+  const look = creep.room.lookAt(creep);
+  var roadFound = false;
+  look.forEach(function(lookObject) {
+      if(lookObject.type == LOOK_STRUCTURES) {
+          if (lookObject.structure.structureType == 'road') {
+              roadFound = true;
+          }
+      }
+  });
+
+  if (!roadFound) {
+      creep.pos.createConstructionSite(STRUCTURE_ROAD);
+  }
+}
+
 module.exports.loop = function () {
     var spawn = Game.spawns['Spawn1'];
     console.log("Running loop");
@@ -16,12 +32,14 @@ module.exports.loop = function () {
 
         if(creep.memory.role == 'worker')
         {
-            roleWorker.run(creep, spawn, mainSource);        
+            roleWorker.run(creep, spawn, mainSource);
         }
         else if (creep.memory.role == 'upgrader')
         {
-            roleUpgrader.run(creep, spawn, mainSource);        
+            roleUpgrader.run(creep, spawn, mainSource);
         }
+
+        checkAndBuildRoad(creep);
     }
 }
 
