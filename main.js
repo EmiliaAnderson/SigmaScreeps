@@ -103,8 +103,8 @@ module.exports.loop = function () {
         {
             var spawnPos = spawn.pos;
 
-            var curPos = room.getPositionAt(spawnPos.x-1, spawnPos.y)
-            var look = room.lookAt(curPos);
+            var curPos = spawn.room.getPositionAt(spawnPos.x-1, spawnPos.y)
+            var look = spawn.room.lookAt(curPos);
             var dontBuildHere = false;
             look.forEach(function(lookObject) {
                 if (dontBuildHere)
