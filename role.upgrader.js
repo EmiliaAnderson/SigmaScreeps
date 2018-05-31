@@ -2,12 +2,21 @@ var upgraderCounter = 1;
 
 var roleUpgrader={
     run: function(creep, spawn, source){
-        if(creep.carry.energy < creep.carryCapacity){
+        if(creep.memory.upgrading && creep.carry.energy == 0) {
+            creep.memory.upgrading = false;
+            creep.say('🔄 collect');
+	    }
+	    if(!creep.memory.upgrading && creep.carry.energy == creep.carryCapacity) {
+	        creep.memory.upgrading = true;
+	        creep.say('⚡ upgrade');
+	    }
+
+        if(!creep.memory.upgrading && creep.carry.energy < creep.carryCapacity){
             if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(source);
             }
         }
-        else {
+        else if (creep.memory.upgrading){
             var controller = creep.room.controller;
             if( creep.upgradeController(controller) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(controller);
