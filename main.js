@@ -97,6 +97,41 @@ module.exports.loop = function () {
         }
 
         checkAndBuildRoad(creep);
+
+        
+        if(spawn.room.controller.level > 1)
+        {
+            var spawnPos = spawn.pos;
+
+            var curPos = room.getPositionAt(spawnPos.x-1, spawnPos.y)
+            var look = room.lookAt(curPos);
+            var dontBuildHere = false;
+            look.forEach(function(lookObject) {
+                if (dontBuildHere)
+                { 
+                    // do nothing     
+                }
+                else if(lookObject.type == LOOK_STRUCTURES) {
+                    if (lookObject.structure.structureType == 'extension') {
+                        dontBuildHere = true;
+                    }
+                }
+                else if(lookObject.type == LOOK_CONSTRUCTION_SITES) {
+                    if (lookObject.constructionSite.structureType == 'extension') {
+                        dontBuildHere = true;
+                    }
+                    else if (lookObject.constructionSite.structureType == 'road') {
+                        lookObject.constructionSite.remove();
+                    }
+                }
+            });
+
+            if (!dontBuildHere)
+            {
+                curPos.createConstructionSite(STRUCTURE_EXTENSION);
+            }
+
+        }
     }
 }
 
