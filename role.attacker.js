@@ -2,7 +2,7 @@ var attackerCounter = 1;
 
 var roleAttacker={
     run: function(creep, spawn){
-        var enemies= creep.room.find(Game.HOSTILE_CREEPS);
+        var enemies= creep.room.find(FIND_HOSTILE_CREEPS);
 
         if(enemies.length > 0)
         {
