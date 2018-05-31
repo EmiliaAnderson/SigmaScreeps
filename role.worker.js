@@ -18,7 +18,9 @@ var roleWorker={
 
         if (spawn.room.energyAvailable >= 200) {
             console.log('Trying to spawn worker!')
-            spawn.spawnCreep([WORK,CARRY,MOVE], 'bob' + workerCounter++, {memory:{role: 'worker'}});
+            if(spawn.spawnCreep([WORK,CARRY,MOVE], 'bob' + workerCounter, {memory:{role: 'worker'}}) == OK){
+                workerCounter++;
+            };
         }
         else {
             console.log("Not enough energy!");
