@@ -4,13 +4,7 @@ module.exports.loop = function () {
     var spawn = Game.spawns['Spawn1'];
     console.log("Running loop");
 
-    if (spawn.room.energyAvailable >= 200) {
-    console.log('Trying to spawn!')
-        spawn.spawnCreep([WORK,CARRY,MOVE], 'bob4', {memory:{role: 'worker'}});
-    }
-    else {
-        console.log("Not enough energy!");
-    }
+    roleWorker.createMinion(spawn);
 
     var sources = spawn.room.find(FIND_SOURCES);
     var mainSource = sources[0];
