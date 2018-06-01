@@ -34,7 +34,8 @@ var checkAndBuildRoad = function (creep) {
   }
 }
 
-var checkToBuildExtension = function(curPos) {
+var checkToBuildExtension = function(curPos, spawn) {
+    //console.log('curPos to build extension: ' + curPos);
     var look = spawn.room.lookAt(curPos);
     var dontBuildHere = false;
     look.forEach(function(lookObject) {
@@ -60,6 +61,7 @@ var checkToBuildExtension = function(curPos) {
     if (!dontBuildHere)
     {
         var result = curPos.createConstructionSite(STRUCTURE_EXTENSION);
+        //console.log('Bduild extionsion result:' + result);
         if (result == ERR_RCL_NOT_ENOUGH)
         {
             return false;
@@ -70,6 +72,8 @@ var checkToBuildExtension = function(curPos) {
 }
 
 module.exports.loop = function () {
+
+    //return;
     var spawn = Game.spawns['Spawn1'];
     console.log("Running loop");
     var sortedCreeps = [];
@@ -124,6 +128,12 @@ module.exports.loop = function () {
     //    mainSource = sources[0];
     //}
     //}
+    var targets = spawn.room.find(FIND_CONSTRUCTION_SITES);
+    var canBuildRoad = false;
+
+    if (targets.length < 10) {
+        canBuildRoad = true;
+    }
 
     for(var name in Game.creeps) {
         var creep = Game.creeps[name];
@@ -148,46 +158,57 @@ module.exports.loop = function () {
         {
             roleBuilder.run(creep, spawn, mainSource);
         }
-
-        checkAndBuildRoad(creep);
+        
+        if (canBuildRoad) {
+            checkAndBuildRoad(creep);
+        }
 
         
-        if(spawn.room.controller.level > 1)
+        
+    }
+    
+    if(spawn.room.controller.level > 1)
+    {
+        var spawnPos = spawn.pos;
+        //console.log('SpawnPos:' + spawnPos);
+        
+        var stillPlacing = true;
+        var offset = 1;
+        
+        while (stillPlacing && offset < 10)
         {
-            var spawnPos = spawn.pos;
-            
-            var stillPlacing = true;
-            var offset = 1;
-            while (stillPlacing)
-            {
-                // try x levels
-                for (var yOffset = spawnPos.y - offset; yOffset < spawnPos.y; yOffset += 2 * offset) {
-                    for (var xOffset = spawnPos.x - offset + 1; xOffset < spawnPos.x + offset - 1; xOffset += 2) {
-                        if (!stillPlacing){
-                            break;
-                        }
-                        var curPos = spawn.room.getPositionAt(spawnPos.x + xOffset, spawnPos.y + yOffset);
-                        stillPlacing = checkToBuildExtension(curPos);
+            //console.log('Offset:' + offset + ' stillPlacing:' + stillPlacing);
+            // try x levels
+            for (var yOffset = spawnPos.y - offset; yOffset <= spawnPos.y + offset; yOffset = yOffset + 2 * offset) {
+                //console.log('First y offset loop: ' + yOffset);
+                for (var xOffset = spawnPos.x - offset + 1; xOffset <= spawnPos.x + offset - 1; xOffset += 2) {
+                    //console.log('xOffset:' + xOffset + ' yOffset:' + yOffset);
+                    //console.log('Offset:' + offset + ' stillPlacing:' + stillPlacing);
+                    if (!stillPlacing){
+                        break;
                     }
+                    var curPos = spawn.room.getPositionAt(xOffset, yOffset);
+                    stillPlacing = checkToBuildExtension(curPos, spawn);
                 }
-
-                // try y levels
-                for (var xOffset = spawnPos.x - offset; xOffset < spawnPos.x; xOffset += 2 * offset) {
-                    for (var yOffset = spawnPos.y - offset + 1; yOffset < spawnPos.y + offset - 1; yOffset += 2) {
-                        if (!stillPlacing){
-                            break;
-                        }
-                        var curPos = spawn.room.getPositionAt(spawnPos.x + xOffset, spawnPos.y + yOffset);
-                        stillPlacing = checkToBuildExtension(curPos);
-                    }
-                }
-                offset++;
+                //console.log('First y offset loop after x loop: ' + yOffset + ' spawnPos:' + spawnPos.y);
             }
-            
-            var curPos = spawn.room.getPositionAt(spawnPos.x-1, spawnPos.y);
-            
 
+            // try y levels
+            for (var xOffset = spawnPos.x - offset; xOffset <= spawnPos.x + offset; xOffset += 2 * offset) {
+                for (var yOffset = spawnPos.y - offset + 1; yOffset <= spawnPos.y + offset - 1; yOffset += 2) {
+                    if (!stillPlacing){
+                        break;
+                    }
+                    var curPos = spawn.room.getPositionAt(xOffset, yOffset);
+                    stillPlacing = checkToBuildExtension(curPos, spawn);
+                }
+            }
+            offset++;
         }
+        
+        var curPos = spawn.room.getPositionAt(spawnPos.x-1, spawnPos.y);
+        
+
     }
 }
 
